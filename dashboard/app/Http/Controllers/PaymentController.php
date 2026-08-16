@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PaymentOrder;
 use App\Services\ExchangeRateService;
+use App\Services\TopupPromoService;
 use App\Services\TripayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,7 @@ class PaymentController extends Controller
             'channels' => $channels,
             'error' => $error,
             'minimumTopup' => $tripay->minimumTopup(),
+            'promo' => app(TopupPromoService::class)->banner(),
         ]);
     }
 
@@ -45,12 +47,19 @@ class PaymentController extends Controller
 
         $rate = $exchange->usdToIdr();
         $creditUsd = bcdiv((string) $data['amount'], $rate, 6);
+
+        // Bonus promo top-up (dikelola admin di menu Event).
+        $bonusIdr = app(TopupPromoService::class)->calculateBonusIdr((int) $data['amount']);
+        $bonusUsd = $bonusIdr > 0 ? bcdiv((string) $bonusIdr, $rate, 6) : '0';
+
         $order = PaymentOrder::create([
             'user_id' => Auth::id(),
             'merchant_ref' => 'AZK-'.now()->format('YmdHis').'-'.strtoupper(Str::random(6)),
             'payment_method' => $data['method'],
             'payment_name' => $channel['name'] ?? $data['method'],
             'amount_idr' => $data['amount'],
+            'bonus_idr' => $bonusIdr,
+            'bonus_usd' => $bonusUsd,
             'credit_usd' => $creditUsd,
             'exchange_rate' => $rate,
         ]);

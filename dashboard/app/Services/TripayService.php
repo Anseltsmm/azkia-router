@@ -108,23 +108,38 @@ class TripayService
             }
 
             if ($status === 'PAID' && ! $order->credited_at) {
-                $user->balance = bcadd((string) $user->balance, (string) $order->credit_usd, 6);
+                $creditUsd = bcadd((string) $order->credit_usd, (string) ($order->bonus_usd ?? '0'), 6);
+                $bonusIdr = (int) ($order->bonus_idr ?? 0);
+
+                $user->balance = bcadd((string) $user->balance, $creditUsd, 6);
                 $user->save();
 
-                Transaction::firstOrCreate(
+                $transaction = Transaction::firstOrCreate(
                     ['payment_order_id' => $order->id],
                     [
                         'user_id' => $user->id,
                         'type' => 'topup',
-                        'amount' => $order->credit_usd,
-                        'balance_before' => bcsub((string) $user->balance, (string) $order->credit_usd, 6),
+                        'amount' => $creditUsd,
+                        'balance_before' => bcsub((string) $user->balance, $creditUsd, 6),
                         'balance_after' => $user->balance,
                         'currency' => 'USD',
                         'status' => 'completed',
                         'reference' => $order->merchant_ref,
-                        'notes' => 'Topup Tripay Rp '.number_format($order->amount_idr, 0, ',', '.'),
+                        'notes' => 'Topup Tripay Rp '.number_format($order->amount_idr, 0, ',', '.').($bonusIdr > 0 ? ' + bonus Rp '.number_format($bonusIdr, 0, ',', '.') : ''),
                     ]
                 );
+
+                // Audit: bonus promo top-up tercatat terpisah dari kredit utama.
+                if ($bonusIdr > 0) {
+                    FinancialAuditEvent::create([
+                        'target_user_id' => $user->id,
+                        'payment_order_id' => $order->id,
+                        'transaction_id' => $transaction->id,
+                        'action' => 'topup_bonus',
+                        'amount' => $order->bonus_usd,
+                        'metadata' => ['amount_idr' => $order->amount_idr, 'bonus_idr' => $bonusIdr],
+                    ]);
+                }
 
                 InboxMessage::firstOrCreate(
                     ['dedupe_key' => "deposit:tripay:{$order->id}:credited"],
@@ -132,7 +147,7 @@ class TripayService
                         'user_id' => $user->id,
                         'sender_id' => null,
                         'subject' => 'Deposit berhasil dikreditkan',
-                        'body' => 'Deposit sebesar IDR '.number_format($order->amount_idr, 0, ',', '.').' telah berhasil dikreditkan menjadi saldo USD '.number_format((float) $order->credit_usd, 6, '.', '').'. Referensi merchant: '.$order->merchant_ref.'.',
+                        'body' => 'Deposit sebesar IDR '.number_format($order->amount_idr, 0, ',', '.').' telah berhasil dikreditkan menjadi saldo USD '.number_format((float) $creditUsd, 6, '.', '').($bonusIdr > 0 ? ' (termasuk bonus promo Rp '.number_format($bonusIdr, 0, ',', '.').')' : '').'. Referensi merchant: '.$order->merchant_ref.'.',
                     ]
                 );
 

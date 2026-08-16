@@ -24,7 +24,10 @@
         <div class="pay-row"><span>{{ __('dashboard.pages.payment.balance_amount') }}</span><strong>Rp {{ number_format($payment->amount_idr, 0, ',', '.') }}</strong></div>
         <div class="pay-row"><span>{{ __('dashboard.pages.payment.fee') }}</span><strong>Rp {{ number_format($payment->fee_customer, 0, ',', '.') }}</strong></div>
         <div class="pay-row"><span>{{ __('dashboard.pages.payment.total') }}</span><strong>Rp {{ number_format($payment->total_amount, 0, ',', '.') }}</strong></div>
-        <div class="pay-row"><span>{{ __('dashboard.pages.payment.received') }}</span><strong>${{ number_format((float) $payment->credit_usd, 6) }}</strong></div>
+        @if((float) $payment->bonus_usd > 0)
+        <div class="pay-row" style="color:var(--green-ink)"><span>{{ __('dashboard.pages.payment.bonus') }}</span><strong>+ Rp {{ number_format($payment->bonus_idr, 0, ',', '.') }}</strong></div>
+        @endif
+        <div class="pay-row"><span>{{ __('dashboard.pages.payment.received') }}</span><strong>${{ number_format((float) $payment->credit_usd + (float) $payment->bonus_usd, 6) }}</strong></div>
         <div class="pay-row"><span>{{ __('dashboard.pages.payment.expires') }}</span><strong>{{ $payment->expires_at?->locale(app()->getLocale())->translatedFormat('d M Y H:i') ?? '—' }}</strong></div>
         <a class="btn secondary" href="{{ route('billing') }}" style="margin-top:14px">{{ __('dashboard.pages.payment.back') }}</a>
     </div>

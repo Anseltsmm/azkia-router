@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['user_id', 'merchant_ref', 'tripay_reference', 'payment_method', 'payment_name', 'amount_idr', 'credit_usd', 'exchange_rate', 'fee_customer', 'total_amount', 'status', 'pay_code', 'pay_url', 'checkout_url', 'qr_url', 'expires_at', 'paid_at', 'credited_at', 'tripay_payload'])]
+#[Fillable(['user_id', 'merchant_ref', 'tripay_reference', 'payment_method', 'payment_name', 'amount_idr', 'bonus_idr', 'bonus_usd', 'credit_usd', 'exchange_rate', 'fee_customer', 'total_amount', 'status', 'pay_code', 'pay_url', 'checkout_url', 'qr_url', 'expires_at', 'paid_at', 'credited_at', 'tripay_payload'])]
 class PaymentOrder extends Model
 {
     use HasFactory;
@@ -15,6 +15,7 @@ class PaymentOrder extends Model
     {
         return [
             'credit_usd' => 'decimal:6',
+            'bonus_usd' => 'decimal:6',
             'exchange_rate' => 'decimal:4',
             'expires_at' => 'datetime',
             'paid_at' => 'datetime',
