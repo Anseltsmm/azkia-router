@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BillingMonitoringController;
 use App\Http\Controllers\Admin\DashboardPopupController;
 use App\Http\Controllers\Admin\DepositController;
@@ -45,6 +46,7 @@ Route::domain('admin.azkia.cloud')->group(function () {
         Route::get('/event', [EventController::class, 'index'])->name('admin.event');
         Route::patch('/event', [EventController::class, 'update'])->name('admin.event.update');
         Route::patch('/event/topup', [EventController::class, 'updateTopup'])->name('admin.event.update-topup');
+        Route::get('/audit-log', [AuditLogController::class, 'index'])->name('admin.audit-log');
         Route::get('/dashboard-popups', [DashboardPopupController::class, 'index'])->name('admin.dashboard-popups.index');
         Route::post('/dashboard-popups', [DashboardPopupController::class, 'store'])->name('admin.dashboard-popups.store');
         Route::patch('/dashboard-popups/{dashboardPopup}', [DashboardPopupController::class, 'update'])->name('admin.dashboard-popups.update');

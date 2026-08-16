@@ -19,6 +19,7 @@
             $isAdmin && request()->routeIs('admin.support.*') => 'Support Center',
             $isAdmin && request()->routeIs('admin.payment-settings.*') => 'Payment Gateway',
             $isAdmin && request()->routeIs('admin.event') => 'Event',
+            $isAdmin && request()->routeIs('admin.audit-log') => 'Audit Log',
             $isAdmin && request()->routeIs('admin.dashboard-popups.*') => 'Popup Dashboard',
             $isAdmin && request()->routeIs('admin.users.show') => 'User Detail',
             $isAdmin && request()->routeIs('admin.users.edit') => 'Edit User',
@@ -398,6 +399,7 @@
                 <a class="{{ request()->routeIs('admin.users') ? 'active' : '' }}" href="{{ route('admin.users') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Users</a>
                 <div class="nav-label">Lainnya</div>
                 <a class="{{ request()->routeIs('api-health') ? 'active' : '' }}" href="{{ route('api-health') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>API Health</a>
+                <a class="{{ request()->routeIs('admin.audit-log') ? 'active' : '' }}" href="{{ route('admin.audit-log') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Audit Log</a>
                 <a href="https://azkia.cloud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>User Site</a>
             @else
                 <div class="nav-label">{{ __('dashboard.nav.section_main') }}</div>

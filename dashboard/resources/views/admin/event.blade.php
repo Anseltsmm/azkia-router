@@ -7,7 +7,7 @@
     .tier-row button{width:40px;height:38px;padding:0;background:var(--red-soft);color:var(--red-ink);border-color:var(--red-line);box-shadow:none}
     .tier-row button:hover{background:#fde3e3;box-shadow:none}
 </style>
-<div class="top"><div><h2>Event</h2><p>Kelola program promo &amp; event untuk pengguna.</p></div></div>
+<div class="top"><div><h2>Event</h2><p>Kelola program promo &amp; event untuk pengguna.</p></div><a class="btn secondary" href="{{ route('admin.audit-log') }}">Lihat Audit Log</a></div>
 @include('admin._alerts')
 
 {{-- ============ Event Top Up ============ --}}

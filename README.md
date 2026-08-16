@@ -53,7 +53,8 @@
 - **Multi-bahasa ID/EN** — switcher bahasa (persisten via cookie) + tema gelap/terang
 
 ### Untuk Admin (`admin.azkia.cloud`)
-- **Event** — atur promo top-up (bonus jenjang/persen) & program referral (reward, min. top-up, toggle on/off), lengkap dengan audit perubahan
+- **Event** — atur promo top-up (bonus jenjang/persen) & program referral (reward, min. top-up, toggle on/off)
+- **Audit Log** — jejak lengkap semua aksi finansial & pengaturan (top-up bonus, reward referral, manual credit, reconcile, perubahan settings Event) dengan filter action/user/tanggal
 - Kelola **provider** (upstream) & **model** (aktif/nonaktif, rate limit per menit, harga per 1M token, badge promo)
 - Kelola **plan** (kuota, harga IDR, stok, reset harian, rate limit per menit)
 - **Deposit** — rekonsiliasi otomatis order Tripay, manual credit (dengan verifikasi password admin), export
