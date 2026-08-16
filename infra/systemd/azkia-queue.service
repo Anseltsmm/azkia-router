@@ -1,0 +1,14 @@
+[Unit]
+Description=Azkia Router Laravel Queue Worker
+After=network.target postgresql.service redis-server.service
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/home/ubuntu/azkia-router/dashboard
+ExecStart=/usr/bin/php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

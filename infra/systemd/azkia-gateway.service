@@ -1,0 +1,19 @@
+[Unit]
+Description=Azkia Router FastAPI Gateway
+After=network.target postgresql.service redis-server.service
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/azkia-router/gateway
+EnvironmentFile=/home/ubuntu/azkia-router/gateway/.env
+ExecStart=/home/ubuntu/azkia-router/gateway/.venv/bin/gunicorn app.main:app -k uvicorn.workers.UvicornWorker --bind 127.0.0.1:8001 --workers 2 --timeout 180
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/home/ubuntu/azkia-router
+
+[Install]
+WantedBy=multi-user.target

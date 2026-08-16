@@ -1,0 +1,9 @@
+[Unit]
+Description=Azkia Router Exchange Rate Refresh (USD->IDR)
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/home/ubuntu/azkia-router/dashboard
+ExecStart=/usr/bin/php artisan exchange-rate:refresh

@@ -1,0 +1,22 @@
+Azkia Router production systemd deployment
+
+1. Edit gateway env:
+   cp /home/ubuntu/azkia-router/gateway/.env.example /home/ubuntu/azkia-router/gateway/.env
+   nano /home/ubuntu/azkia-router/gateway/.env
+
+2. Deploy native services:
+   /home/ubuntu/azkia-router/scripts/deploy-systemd.sh
+
+3. Install Laravel dashboard after PHP is ready:
+   /home/ubuntu/azkia-router/scripts/install-dashboard.sh
+
+4. Enable Laravel workers after dashboard install:
+   sudo systemctl enable --now azkia-queue azkia-scheduler.timer azkia-exchange-rate.timer
+
+5. SSL:
+   sudo certbot --nginx -d azkia.cloud -d www.azkia.cloud -d api.azkia.cloud -d admin.azkia.cloud
+
+6. Status:
+   systemctl status azkia-gateway
+   systemctl status azkia-queue
+   systemctl status azkia-scheduler.timer

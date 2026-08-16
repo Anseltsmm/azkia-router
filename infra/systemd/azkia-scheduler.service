@@ -1,0 +1,8 @@
+[Unit]
+Description=Azkia Router Laravel Scheduler
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/home/ubuntu/azkia-router/dashboard
+ExecStart=/usr/bin/php artisan schedule:run
