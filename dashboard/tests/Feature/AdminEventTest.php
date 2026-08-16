@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AppSetting;
+use App\Models\FinancialAuditEvent;
 use App\Models\PaymentOrder;
 use App\Models\PaymentSetting;
 use App\Models\Transaction;
@@ -59,6 +60,13 @@ class AdminEventTest extends TestCase
         $this->assertSame('1', AppSetting::get('referral.enabled'));
         $this->assertSame('1.250000', AppSetting::get('referral.reward_usd'));
         $this->assertSame('100000', AppSetting::get('referral.min_topup_idr'));
+
+        // Audit: perubahan pengaturan dicatat dengan actor = admin.
+        $audit = FinancialAuditEvent::where('action', 'event_referral_settings')->get();
+        $this->assertSame(1, $audit->count());
+        $this->assertSame($admin->id, $audit->first()->actor_id);
+        $this->assertSame((float) config('referral.reward_usd'), $audit->first()->metadata['before']['reward_usd']);
+        $this->assertSame('1.250000', $audit->first()->metadata['after']['reward_usd']);
     }
 
     public function test_referral_reward_uses_db_settings(): void

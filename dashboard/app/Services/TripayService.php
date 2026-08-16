@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AppSetting;
+use App\Models\FinancialAuditEvent;
 use App\Models\InboxMessage;
 use App\Models\PaymentOrder;
 use App\Models\PaymentSetting;
@@ -178,7 +179,7 @@ class TripayService
         $referrer->balance = bcadd($balanceBefore, $reward, 6);
         $referrer->save();
 
-        Transaction::create([
+        $transaction = Transaction::create([
             'user_id' => $referrer->id,
             'type' => 'referral_reward',
             'amount' => $reward,
@@ -188,6 +189,25 @@ class TripayService
             'status' => 'completed',
             'reference' => 'REF:'.$user->referral_code,
             'notes' => 'Reward referral dari '.$user->name,
+        ]);
+
+        // Audit trail: reward referral tercatat sebagai financial audit event
+        // (terhubung ke order top-up pemicu & transaksi reward).
+        FinancialAuditEvent::create([
+            'target_user_id' => $referrer->id,
+            'payment_order_id' => $order->id,
+            'transaction_id' => $transaction->id,
+            'action' => 'referral_reward',
+            'amount' => $reward,
+            'balance_before' => $balanceBefore,
+            'balance_after' => $referrer->balance,
+            'metadata' => [
+                'referred_user_id' => $user->id,
+                'referred_user_name' => $user->name,
+                'referred_by_id' => $user->referred_by,
+                'referral_code' => $user->referral_code,
+                'topup_amount_idr' => $order->amount_idr,
+            ],
         ]);
 
         InboxMessage::firstOrCreate(

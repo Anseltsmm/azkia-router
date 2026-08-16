@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\FinancialAuditEvent;
 use App\Models\PaymentOrder;
 use App\Models\PaymentSetting;
 use App\Models\Transaction;
@@ -84,9 +85,18 @@ class ReferralFeatureTest extends TestCase
         $this->assertSame('0.500000', $referrer->fresh()->balance);
         $this->assertSame(1, Transaction::where('type', 'referral_reward')->count());
         $this->assertNotNull($friend->fresh()->referral_rewarded_at);
+        // Audit: reward referral tercatat, terhubung ke order & transaksi.
+        $audit = FinancialAuditEvent::where('action', 'referral_reward')->get();
+        $this->assertSame(1, $audit->count());
+        $this->assertSame($referrer->id, $audit->first()->target_user_id);
+        $this->assertSame($order->id, $audit->first()->payment_order_id);
+        $this->assertNotNull($audit->first()->transaction_id);
+        $this->assertSame('0.500000', $audit->first()->amount);
+        $this->assertSame($friend->id, $audit->first()->metadata['referred_user_id']);
         // Reconcile ulang tidak menambah reward.
         $this->assertSame('0.500000', $referrer->fresh()->balance);
         $this->assertSame(1, Transaction::where('type', 'referral_reward')->count());
+        $this->assertSame(1, FinancialAuditEvent::where('action', 'referral_reward')->count());
     }
 
     public function test_no_reward_below_minimum_topup(): void
