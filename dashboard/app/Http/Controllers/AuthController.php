@@ -54,6 +54,8 @@ class AuthController extends Controller
             'password' => $data['password'],
             'balance' => 0,
             'status' => 'active',
+            'referral_code' => User::generateReferralCode(),
+            'referred_by' => $this->resolveReferrer(),
         ]);
 
         // Kuota gratis harian otomatis untuk setiap user baru.
@@ -105,6 +107,8 @@ class AuthController extends Controller
                 'password' => null,
                 'balance' => 0,
                 'status' => 'active',
+                'referral_code' => User::generateReferralCode(),
+                'referred_by' => $this->resolveReferrer(),
             ]);
             Plan::grantFreePlan($user);
         } elseif ($user->status !== 'active') {
@@ -115,6 +119,20 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'));
+    }
+
+    /**
+     * Ambil referrer dari session (dipasang oleh middleware TrackReferral saat
+     * pengunjung membuka link ?ref=CODE), lalu hapus session-nya.
+     */
+    private function resolveReferrer(): ?int
+    {
+        $code = strtoupper(trim((string) session()->pull('referral_code')));
+        if ($code === '') {
+            return null;
+        }
+
+        return User::where('referral_code', $code)->value('id');
     }
 
     public function logout(Request $request)

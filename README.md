@@ -42,6 +42,7 @@
 - **Sistem Plan** — free plan harian otomatis + plan berbayar (kuota token, stok, promo) + mode **PAYG** (pay-as-you-go per request)
 - **Top-up saldo IDR** — pembayaran via **Tripay** (VA, QRIS, e-wallet), saldo dikonversi ke USD memakai kurs realtime
 - **Redeem code** — kode isi saldo / kuota
+- **Program Referral** — undang teman lewat link `?ref=kode`; referrer dapat reward saldo flat saat teman melakukan top-up pertama (min. nominal)
 - **Usage analytics** — grafik per hari, per model, per API key; filter status (sukses/error), export CSV
 - **Leaderboard model** — ranking pemakaian antar pengguna
 - **Model status & API health** — halaman status model realtime + health gateway

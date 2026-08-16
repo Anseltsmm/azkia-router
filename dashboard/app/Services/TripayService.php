@@ -6,6 +6,7 @@ use App\Models\InboxMessage;
 use App\Models\PaymentOrder;
 use App\Models\PaymentSetting;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -133,6 +134,8 @@ class TripayService
                     ]
                 );
 
+                $this->applyReferralReward($order, $user);
+
                 $order->credited_at = now();
             }
 
@@ -140,6 +143,57 @@ class TripayService
 
             return $order;
         });
+    }
+
+    /**
+     * Reward referral: saat user yang direferensikan melakukan top-up pertama
+     * (nominal >= minimum), referrer mendapat reward saldo flat. Hanya sekali
+     * per user (ditandai referral_rewarded_at).
+     */
+    private function applyReferralReward(PaymentOrder $order, User $user): void
+    {
+        if (! $user->referred_by || $user->referral_rewarded_at) {
+            return;
+        }
+
+        if ((int) $order->amount_idr < (int) config('referral.min_topup_idr')) {
+            return;
+        }
+
+        $referrer = User::whereKey($user->referred_by)->lockForUpdate()->first();
+        if (! $referrer) {
+            return;
+        }
+
+        $reward = (string) config('referral.reward_usd');
+        $balanceBefore = (string) $referrer->balance;
+        $referrer->balance = bcadd($balanceBefore, $reward, 6);
+        $referrer->save();
+
+        Transaction::create([
+            'user_id' => $referrer->id,
+            'type' => 'referral_reward',
+            'amount' => $reward,
+            'balance_before' => $balanceBefore,
+            'balance_after' => $referrer->balance,
+            'currency' => 'USD',
+            'status' => 'completed',
+            'reference' => 'REF:'.$user->referral_code,
+            'notes' => 'Reward referral dari '.$user->name,
+        ]);
+
+        InboxMessage::firstOrCreate(
+            ['dedupe_key' => "referral:rewarded:{$user->id}"],
+            [
+                'user_id' => $referrer->id,
+                'sender_id' => null,
+                'subject' => 'Reward referral diterima',
+                'body' => 'Kamu mendapat reward referral $'.$reward.' dari '.$user->name.' atas top-up pertamanya. Referensi: '.$user->referral_code.'.',
+            ]
+        );
+
+        $user->referral_rewarded_at = now();
+        $user->save();
     }
 
     private function normalizeTransactionDetail(PaymentOrder $order, array $data): array

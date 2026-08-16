@@ -136,6 +136,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/inbox/delete-all', [InboxController::class, 'destroyAll'])->name('inbox.destroy-all');
     Route::patch('/inbox/{inboxMessage}/read', [InboxController::class, 'read'])->name('inbox.read');
     Route::delete('/inbox/{inboxMessage}', [InboxController::class, 'destroy'])->name('inbox.destroy');
+    Route::get('/referral', [DashboardController::class, 'referral'])->name('referral');
     Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
     Route::patch('/settings/profile', [DashboardController::class, 'updateProfile'])->name('settings.profile');
     Route::post('/api-keys', [ApiKeyController::class, 'store'])->name('api-keys.store');

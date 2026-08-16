@@ -524,6 +524,28 @@ class DashboardController extends Controller
         return view('user.settings', ['user' => Auth::user()]);
     }
 
+    public function referral()
+    {
+        $user = Auth::user();
+
+        // Defensif: pastikan user punya kode referral (user lama dari backfill).
+        if (! $user->referral_code) {
+            $user->update(['referral_code' => User::generateReferralCode()]);
+        }
+
+        $referrals = User::where('referred_by', $user->id)->get();
+
+        return view('user.referral', [
+            'referralCode' => $user->referral_code,
+            'referralLink' => url('/?ref='.$user->referral_code),
+            'totalReferrals' => $referrals->count(),
+            'pendingReferrals' => $referrals->whereNull('referral_rewarded_at')->count(),
+            'totalEarned' => (string) Transaction::where('user_id', $user->id)->where('type', 'referral_reward')->sum('amount'),
+            'rewardText' => '$'.number_format((float) config('referral.reward_usd'), 2),
+            'minTopupText' => 'Rp '.number_format((int) config('referral.min_topup_idr'), 0, ',', '.'),
+        ]);
+    }
+
     public function updateProfile(Request $request)
     {
         $user = Auth::user();

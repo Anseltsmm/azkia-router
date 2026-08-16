@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
-#[Fillable(['name', 'email', 'password', 'is_admin', 'balance', 'status', 'payg_enabled'])]
+#[Fillable(['name', 'email', 'password', 'is_admin', 'balance', 'status', 'payg_enabled', 'referral_code', 'referred_by', 'referral_rewarded_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -31,7 +32,30 @@ class User extends Authenticatable
             'balance' => 'decimal:6',
             'reserved_balance' => 'decimal:6',
             'payg_enabled' => 'boolean',
+            'referral_rewarded_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Generate kode referral unik (huruf besar acak 8 karakter).
+     */
+    public static function generateReferralCode(): string
+    {
+        do {
+            $code = strtoupper(Str::random(8));
+        } while (static::where('referral_code', $code)->exists());
+
+        return $code;
+    }
+
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'referred_by');
     }
 
     public function plans()
