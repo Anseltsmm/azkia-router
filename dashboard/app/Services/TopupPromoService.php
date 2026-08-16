@@ -60,14 +60,16 @@ class TopupPromoService
             return (int) round($amountIdr * $this->percent() / 100);
         }
 
-        $best = 0;
+        // Jenjang sudah diurutkan ascending oleh tiers(): ambil jenjang
+        // tertinggi yang memenuhi nominal (bukan sekadar bonus terbesar).
+        $bonus = 0;
         foreach ($this->tiers() as $tier) {
             if ($amountIdr >= (int) $tier['min_idr']) {
-                $best = max($best, (int) $tier['bonus_idr']);
+                $bonus = (int) $tier['bonus_idr'];
             }
         }
 
-        return $best;
+        return $bonus;
     }
 
     /**

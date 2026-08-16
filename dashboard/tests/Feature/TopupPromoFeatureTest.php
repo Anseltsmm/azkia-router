@@ -189,6 +189,23 @@ class TopupPromoFeatureTest extends TestCase
         $this->assertSame(5000, $service->calculateBonusIdr(100000));
     }
 
+    public function test_tier_picks_highest_qualifying_minimum(): void
+    {
+        AppSetting::set('topup_promo.enabled', '1');
+        AppSetting::set('topup_promo.type', 'tier');
+        // Bonus jenjang tinggi sengaja lebih kecil — jenjang tertinggi yang
+        // memenuhi nominal tetap yang dipakai, bukan bonus terbesar.
+        AppSetting::set('topup_promo.tiers', json_encode([
+            ['min_idr' => 50000, 'bonus_idr' => 5000],
+            ['min_idr' => 100000, 'bonus_idr' => 3000],
+        ]));
+
+        $service = app(\App\Services\TopupPromoService::class);
+        $this->assertSame(5000, $service->calculateBonusIdr(75000));   // hanya jenjang 1
+        $this->assertSame(3000, $service->calculateBonusIdr(100000));  // jenjang tertinggi menang
+        $this->assertSame(3000, $service->calculateBonusIdr(250000));
+    }
+
     private function paidData(PaymentOrder $order): array
     {
         return [

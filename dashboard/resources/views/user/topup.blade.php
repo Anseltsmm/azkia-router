@@ -64,7 +64,8 @@
             if (promo.type === 'percent') {
                 bonus = Math.round(amount * promo.percent / 100);
             } else {
-                (promo.tiers || []).forEach(function (t) { if (amount >= t.min_idr) bonus = Math.max(bonus, t.bonus_idr); });
+                // Jenjang sudah urut ascending: ambil jenjang tertinggi yang memenuhi.
+                (promo.tiers || []).forEach(function (t) { if (amount >= t.min_idr) bonus = t.bonus_idr; });
             }
             result.textContent = label.replace(':bonus', fmt(bonus));
         };
