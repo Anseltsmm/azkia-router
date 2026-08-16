@@ -18,6 +18,7 @@
             $isAdmin && request()->routeIs('admin.rejections') => 'Request Ditolak',
             $isAdmin && request()->routeIs('admin.support.*') => 'Support Center',
             $isAdmin && request()->routeIs('admin.payment-settings.*') => 'Payment Gateway',
+            $isAdmin && request()->routeIs('admin.event') => 'Event',
             $isAdmin && request()->routeIs('admin.dashboard-popups.*') => 'Popup Dashboard',
             $isAdmin && request()->routeIs('admin.users.show') => 'User Detail',
             $isAdmin && request()->routeIs('admin.users.edit') => 'Edit User',
@@ -387,6 +388,7 @@
                 <a class="{{ request()->routeIs('admin.keys') ? 'active' : '' }}" href="{{ route('admin.keys') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="M10.5 12.5 20 3"/><path d="M15.5 7.5 18.5 10.5"/><path d="M18 4.5 20 6.5"/></svg>{{ $isAdmin ? 'API Keys' : __('dashboard.nav.keys') }}</a>
                 <a class="{{ request()->routeIs('admin.payment-settings.*') ? 'active' : '' }}" href="{{ route('admin.payment-settings.edit') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>Payment Gateway</a>
                 <a class="{{ request()->routeIs('admin.dashboard-popups.*') ? 'active' : '' }}" href="{{ route('admin.dashboard-popups.index') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h7M7 16h4"/></svg>Popup Dashboard</a>
+                <a class="{{ request()->routeIs('admin.event') ? 'active' : '' }}" href="{{ route('admin.event') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>Event</a>
                 <a class="{{ request()->routeIs('admin.redeem-codes.*') ? 'active' : '' }}" href="{{ route('admin.redeem-codes.index') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 9h8M8 13h5"/></svg>Kode Redeem</a>
                 <a class="{{ request()->routeIs('admin.deposits.*') ? 'active' : '' }}" href="{{ route('admin.deposits.index') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Kelola Deposit</a>
                 <a class="{{ request()->routeIs('admin.billing-monitoring.*') ? 'active' : '' }}" href="{{ route('admin.billing-monitoring.index') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/></svg>Billing Monitoring</a>

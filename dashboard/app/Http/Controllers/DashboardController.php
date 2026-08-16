@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AiModel;
 use App\Models\ApiKey;
+use App\Models\AppSetting;
 use App\Models\InboxMessage;
 use App\Models\PaymentOrder;
 use App\Models\Plan;
@@ -541,8 +542,8 @@ class DashboardController extends Controller
             'totalReferrals' => $referrals->count(),
             'pendingReferrals' => $referrals->whereNull('referral_rewarded_at')->count(),
             'totalEarned' => (string) Transaction::where('user_id', $user->id)->where('type', 'referral_reward')->sum('amount'),
-            'rewardText' => '$'.number_format((float) config('referral.reward_usd'), 2),
-            'minTopupText' => 'Rp '.number_format((int) config('referral.min_topup_idr'), 0, ',', '.'),
+            'rewardText' => '$'.number_format((float) AppSetting::get('referral.reward_usd', config('referral.reward_usd')), 2),
+            'minTopupText' => 'Rp '.number_format((int) AppSetting::get('referral.min_topup_idr', config('referral.min_topup_idr')), 0, ',', '.'),
         ]);
     }
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BillingMonitoringController;
 use App\Http\Controllers\Admin\DashboardPopupController;
 use App\Http\Controllers\Admin\DepositController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\RedeemCodeController as AdminRedeemCodeController;
 use App\Http\Controllers\Admin\RequestLogController;
@@ -41,6 +42,8 @@ Route::domain('admin.azkia.cloud')->group(function () {
         Route::get('/api-keys', [AdminController::class, 'keys'])->name('admin.keys');
         Route::get('/settings/payments', [PaymentSettingController::class, 'edit'])->name('admin.payment-settings.edit');
         Route::patch('/settings/payments', [PaymentSettingController::class, 'update'])->name('admin.payment-settings.update');
+        Route::get('/event', [EventController::class, 'index'])->name('admin.event');
+        Route::patch('/event', [EventController::class, 'update'])->name('admin.event.update');
         Route::get('/dashboard-popups', [DashboardPopupController::class, 'index'])->name('admin.dashboard-popups.index');
         Route::post('/dashboard-popups', [DashboardPopupController::class, 'store'])->name('admin.dashboard-popups.store');
         Route::patch('/dashboard-popups/{dashboardPopup}', [DashboardPopupController::class, 'update'])->name('admin.dashboard-popups.update');

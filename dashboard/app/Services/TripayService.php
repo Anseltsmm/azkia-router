@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AppSetting;
 use App\Models\InboxMessage;
 use App\Models\PaymentOrder;
 use App\Models\PaymentSetting;
@@ -156,7 +157,14 @@ class TripayService
             return;
         }
 
-        if ((int) $order->amount_idr < (int) config('referral.min_topup_idr')) {
+        // Program referral bisa dinonaktifkan dari menu admin (Event).
+        $enabled = (bool) filter_var(AppSetting::get('referral.enabled', '1'), FILTER_VALIDATE_BOOL);
+        if (! $enabled) {
+            return;
+        }
+
+        $minTopupIdr = (int) AppSetting::get('referral.min_topup_idr', config('referral.min_topup_idr'));
+        if ((int) $order->amount_idr < $minTopupIdr) {
             return;
         }
 
@@ -165,7 +173,7 @@ class TripayService
             return;
         }
 
-        $reward = (string) config('referral.reward_usd');
+        $reward = (string) AppSetting::get('referral.reward_usd', config('referral.reward_usd'));
         $balanceBefore = (string) $referrer->balance;
         $referrer->balance = bcadd($balanceBefore, $reward, 6);
         $referrer->save();
